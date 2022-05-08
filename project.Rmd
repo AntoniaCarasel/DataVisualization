@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # We can also add population for each state si sa vedem % incidents raportat la populatie
 
 # Another Data frame for state codes to use for graphs instead of full names
-# Daca avem timp la final, it might be nice sa facem si o predictie, desi nu parea mega impresionat. Daca nu facem, sa stergem asta din descrierea initiala
+# Daca avem timp la final, it might be nice sa facem si o predictie. Daca nu facem, sa stergem asta din descrierea initiala
 # We could also do stuff like PCA maybe,care ar fi mai usoare decat predictia and I have Python code for that
 
 # Niste categorii cu ce facem scrise la inceput
