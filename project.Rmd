@@ -10,7 +10,6 @@ date: '2022-05-07'
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# Adding this thing here. Some change whatever
 
 # TO KEEP IN MIND - la fiecare grafic: ce vrem sa vedem (scris la inceput), tipul de grafic, datele folosite, interpretare
 
@@ -199,7 +198,7 @@ fullsetDF.insert(fieldNo, "CHILDREN PARTICIPANTS", children)
 # latitude and logitude - is this really helpful?
 
 # Renaming the fields. This step was necessary since we aim to use the exact names for plotting and they should be representative and without any additional characters such as "_".
-```{python}
+This is completely useless. Nu ma incanta cu ABSOLUT nimic, mai tare ma incurca to be honest
 fullsetDF = fullsetDF.rename(columns={
      "date":"DATE",
      "state":"STATE",
@@ -207,7 +206,7 @@ fullsetDF = fullsetDF.rename(columns={
      "n_injured":"NO PEOPLE INJURED",
      "gun_stolen":"STOLEN GUN",
 })
-```
+
 # De terminat aici
 #city_or_county	address	n_killed	n_injured	incident_url	source_url	incident_url_fields_missing	congressional_district	gun_stolen	gun_type	incident_characteristics	latitude	location_description	longitude	n_guns_involved	notes	participant_age	participant_age_group	participant_gender	participant_name	participant_relationship	participant_status	participant_type	sources	state_house_district	state_senate_district
 
@@ -215,13 +214,27 @@ fullsetDF = fullsetDF.rename(columns={
 # Definition of variables
 This section contains all the variables that will be used going further for plotting. Any data selection or processing will be done here.
 
-Calculation of the total number of incidents that occured in each state, regardless of month or year.
+Calculating total numbers of
+  * incidents that occured 
+  * cases that resulted in killings
+  * cases that resulted in injuries
+in each state, regardless of month or year.
 ```{python}
 totalPerState = []
+totalKillingsPerState = []
+totalInjuriesPerState = []
+
 for i in range (0, len(stateCodesDF)):
     state = stateCodesDF["State"][i]
-    array = np.array(fullsetDF['STATE'].to_numpy())
-    totalPerState.append(array[array==state].shape[0])
+
+    dfHelper = fullsetDF[fullsetDF["state"]==state]['state'].copy(deep=True)
+    totalPerState.append(dfHelper.count().item())
+
+    dfHelper = fullsetDF[(fullsetDF["state"] == state) & (fullsetDF['n_killed'] > 0)]['state'].copy(deep=True)
+    totalKillingsPerState.append(dfHelper.count().item())
+
+    dfHelper = fullsetDF[(fullsetDF["state"] == state) & (fullsetDF['n_injured'] > 0)]['state'].copy(deep=True)
+    totalInjuriesPerState.append(dfHelper.count().item())
 
 stateCodes = stateCodesDF["Code"]
 ```
@@ -237,16 +250,58 @@ fullsetDF.to_csv("gun-violence_processed-data.csv")
 
 # Graphs
 ## Initial exploration of the dataset
-**Chart Type:** Histogram with one numeric variable - number of incidents, no of people killed + others!!!
+### **Chart Type:** Barplot with one numeric variable
+
+We have defined a function for this type of plot and called it for each of the scenarios.
+```{r}
+initial_eda_barplots <- function(all_labels, all_values, x_name, y_name, plot_title){
+  
+  data=data.frame(name = all_labels, value = all_values)
+
+  totalIncidentsBarPlot <- ggplot(data, aes(x=name, y = value)) + geom_bar(stat = "identity", width=0.7, fill = "#091CC1") + 
+    xlab(x_name) + 
+    ylab(y_name) +
+    ggtitle(plot_title)  
+
+  totalIncidentsBarPlot +
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.background = element_rect(fill = "white")
+  )
+}
+```
+
+**Variable: Total number of incidents that occured**
 
 We want to see the distribution of the total number of incidents per each state. We will use the `totalPerState` dataframe and the codes from the `stateCodes` array.
 
 ```{r}
-r_totalPerDistrict <- py$totalPerState
+r_totalPerState <- py$totalPerState
 r_labels <- py$stateCodes
+
+initial_eda_barplots(r_labels, r_totalPerState, "State Code", "Number of incidents", "Distribution of incidents per State")
 ```
 
-**Chart Type:** Histogram with two numeric variables
+The general level of incidents can roughly be found somewhere in the interval [0,5000], but we do see some outliers - states have a significantly higher number of gun-involved cases.
+
+**Variable: Total number of cases that resulted in killings**
+```{r}
+r_totalPerState <- py$totalKillingsPerState
+
+initial_eda_barplots(r_labels, r_totalPerState, "State Code", "Number of killings", "Distribution of cases that resulted in killings per State")
+```
+
+**Variable: Total number of cases that resulted in injuries**
+```{r}
+r_totalPerState <- py$totalInjuriesPerState
+
+initial_eda_barplots(r_labels, r_totalPerState, "State Code", "Number of injuries", "Distribution of cases that resulted in injuries per State")
+```
+
+
+### **Chart Type:** Histogram with two numeric variables
 We want to see the distribution of people involved in an incident, split by gender. We will use two Y axis and ...dataframs.
 ```{r}
 
