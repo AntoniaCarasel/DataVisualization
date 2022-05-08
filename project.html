@@ -423,7 +423,8 @@ codes.</p>
 <div id="settings" class="section level1">
 <h1>Settings</h1>
 <p>R specific libraries import</p>
-<pre class="r"><code>library(reticulate)</code></pre>
+<pre class="r"><code>library(reticulate)
+library(ggplot2)</code></pre>
 <p>Python specific libraries import</p>
 <pre class="python"><code>import pandas as pd
 import numpy as np
@@ -661,12 +662,23 @@ are now working with.</h1>
 <h1>Graphs</h1>
 <div id="initial-exploration-of-the-dataset" class="section level2">
 <h2>Initial exploration of the dataset</h2>
-<p><strong>Chart Type:</strong> Histogram with one numeric variable</p>
+<p><strong>Chart Type:</strong> Histogram with one numeric variable -
+number of incidents, no of people killed + others!!!</p>
 <p>We want to see the distribution of the total number of incidents per
 each state. We will use the <code>totalPerState</code> dataframe and the
 codes from the <code>stateCodes</code> array.</p>
 <pre class="r"><code>r_totalPerDistrict &lt;- py$totalPerState
 r_labels &lt;- py$stateCodes</code></pre>
+<p><strong>Chart Type:</strong> Histogram with two numeric variables We
+want to see the distribution of people involved in an incident, split by
+gender. We will use two Y axis and …dataframs.</p>
+<p><strong>Chart Type:</strong> Doughnut Chart We want Variables: Total
+number of incidents, total number of incidents per state =&gt;
+procent</p>
+<p><strong>Chart Type:</strong> We want to see the level of crime for
+each state proportional to the size of the population. We have
+previously calcuated the respective percentages and they will be ploted
+below, also adding tooltips to offer more details for each state.</p>
 </div>
 </div>
 <div id="bar-plot" class="section level1">
